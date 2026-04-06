@@ -74,33 +74,28 @@ define([
     var initTable = function(userid, sesskey) {
         var $checkAll = $('#nm-check-all');
         var $checkItems = $('.nm-check-item');
-        var $btnDelete = $('#nm-btn-delete');
+        var $btnSoftDelete = $('#nm-btn-soft-delete');
+        var $btnHardDelete = $('#nm-btn-hard-delete');
 
-        var updateDeleteButton = function() {
+        var updateDeleteButtons = function() {
             var selectedCount = $('.nm-check-item:checked').length;
-            if (selectedCount > 0) {
-                $btnDelete.prop('disabled', false);
-            } else {
-                $btnDelete.prop('disabled', true);
-            }
+            $btnSoftDelete.prop('disabled', selectedCount === 0);
+            $btnHardDelete.prop('disabled', selectedCount === 0);
         };
 
         $checkAll.on('change', function() {
-            var isChecked = $(this).prop('checked');
-            $checkItems.prop('checked', isChecked);
-            updateDeleteButton();
+            $checkItems.prop('checked', $(this).prop('checked'));
+            updateDeleteButtons();
         });
 
         $checkItems.on('change', function() {
-            updateDeleteButton();
+            updateDeleteButtons();
         });
 
-        $btnDelete.on('click', function(e) {
-            e.preventDefault();
-            
+        var handleDeleteAction = function(actionType) {
             str.get_strings([
                 { key: 'confirm', component: 'moodle' },
-                { key: 'confirm_delete', component: 'local_notification_manager' },
+                { key: actionType === 'soft' ? 'confirm_move_trash' : 'confirm_delete_permanently', component: 'local_notification_manager' },
                 { key: 'yes', component: 'moodle' },
                 { key: 'no', component: 'moodle' }
             ]).done(function(s) {
@@ -110,7 +105,6 @@ define([
                     s[2], // Yes
                     s[3], // No
                     function() {
-                        // User clicked Yes
                         var selectedIds = [];
                         $('.nm-check-item:checked').each(function() {
                             selectedIds.push($(this).val());
@@ -122,7 +116,8 @@ define([
                             data: {
                                 sesskey: sesskey,
                                 userid: userid,
-                                ids: selectedIds
+                                ids: selectedIds,
+                                action: actionType
                             },
                             dataType: 'json',
                             success: function(response) {
@@ -139,7 +134,10 @@ define([
                     }
                 );
             });
-        });
+        };
+
+        $btnSoftDelete.on('click', function(e) { e.preventDefault(); handleDeleteAction('soft'); });
+        $btnHardDelete.on('click', function(e) { e.preventDefault(); handleDeleteAction('hard'); });
     };
 
     return {

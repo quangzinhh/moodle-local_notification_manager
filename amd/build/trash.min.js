@@ -28,7 +28,6 @@ define([
 
             if (parsedId) {
                 $userId.val(parsedId);
-                // When an actual user is selected, submit form to load data
                 document.getElementById('notification-manager-args').submit();
             } else {
                 $userId.val('');
@@ -74,12 +73,12 @@ define([
     var initTable = function(userid, sesskey) {
         var $checkAll = $('#nm-check-all');
         var $checkItems = $('.nm-check-item');
-        var $btnSoftDelete = $('#nm-btn-soft-delete');
+        var $btnRestore = $('#nm-btn-restore');
         var $btnHardDelete = $('#nm-btn-hard-delete');
 
         var updateDeleteButtons = function() {
             var selectedCount = $('.nm-check-item:checked').length;
-            $btnSoftDelete.prop('disabled', selectedCount === 0);
+            $btnRestore.prop('disabled', selectedCount === 0);
             $btnHardDelete.prop('disabled', selectedCount === 0);
         };
 
@@ -92,10 +91,10 @@ define([
             updateDeleteButtons();
         });
 
-        var handleDeleteAction = function(actionType) {
+        var handleTrashAction = function(actionType) {
             str.get_strings([
                 { key: 'confirm', component: 'moodle' },
-                { key: actionType === 'soft' ? 'confirm_move_trash' : 'confirm_delete_permanently', component: 'local_notification_manager' },
+                { key: actionType === 'restore' ? 'confirm_restore' : 'confirm_delete_permanently', component: 'local_notification_manager' },
                 { key: 'yes', component: 'moodle' },
                 { key: 'no', component: 'moodle' }
             ]).done(function(s) {
@@ -111,7 +110,7 @@ define([
                         });
 
                         $.ajax({
-                            url: M.cfg.wwwroot + '/local/notification_manager/delete_notifications.php',
+                            url: M.cfg.wwwroot + '/local/notification_manager/trash_action.php',
                             method: 'POST',
                             data: {
                                 sesskey: sesskey,
@@ -136,16 +135,14 @@ define([
             });
         };
 
-        $btnSoftDelete.on('click', function(e) { e.preventDefault(); handleDeleteAction('soft'); });
-        $btnHardDelete.on('click', function(e) { e.preventDefault(); handleDeleteAction('hard'); });
+        $btnRestore.on('click', function(e) { e.preventDefault(); handleTrashAction('restore'); });
+        $btnHardDelete.on('click', function(e) { e.preventDefault(); handleTrashAction('hard'); });
     };
 
     return {
         init: function(config) {
             initUserSelect();
-            if (config.userid > 0) {
-                initTable(config.userid, config.sesskey);
-            }
+            initTable(config.userid || 0, config.sesskey);
         }
     };
 });

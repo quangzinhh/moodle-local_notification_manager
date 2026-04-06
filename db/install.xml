@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/notification_manager/db" VERSION="2026040600" COMMENT="XMLDB file for local_notification_manager"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+    <TABLES>
+        <TABLE NAME="local_notification_trash" COMMENT="Stored soft-deleted notifications before permanent deletion">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="originalid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="useridto" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="subject" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="component" TYPE="char" LENGTH="100" NOTNULL="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="timeread" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="timedeleted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="rawdata" TYPE="text" NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="useridto_idx" UNIQUE="false" FIELDS="useridto"/>
+                <INDEX NAME="timedeleted_idx" UNIQUE="false" FIELDS="timedeleted"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>

@@ -1,29 +1,19 @@
-<div class="local-notification-dashboard" id="local-notification-dashboard">
+<div class="local-notification-trash" id="local-notification-trash">
     <div class="card mb-4">
         <div class="card-header">
-            <h4>{{{str.dashboardtitle}}}</h4>
+            <h4>{{{str.tab_trash}}}</h4>
         </div>
         <div class="card-body">
-            <form id="notification-manager-args" method="get" action="manage.php" class="row">
+            <form id="notification-manager-args" method="get" action="trash.php" class="row">
                 <input type="hidden" name="userid" id="form-userid" value="{{userid}}">
                 
                 <div class="col-md-4 mb-3">
                     <label for="nm-user-label">{{str.searchusers}}</label>
-                    <input type="text" id="nm-user-label" name="userlabel" class="form-control nm-user-input" required="required" placeholder="{{str.searchusers}}" value="{{userlabel}}" list="nm-user-suggestions" autocomplete="off">
+                    <input type="text" id="nm-user-label" name="userlabel" class="form-control nm-user-input" placeholder="{{str.searchusers}}" value="{{userlabel}}" list="nm-user-suggestions" autocomplete="off">
                     <datalist id="nm-user-suggestions"></datalist>
                 </div>
                 
-                {{#is_user_selected}}
-                <div class="col-md-3 mb-3">
-                    <label for="filter-status">Filter</label>
-                    <select name="filter" id="filter-status" class="form-control" onchange="document.getElementById('notification-manager-args').submit();">
-                        <option value="all" {{#filter_all_selected}}selected{{/filter_all_selected}}>{{str.filter_all}}</option>
-                        <option value="read" {{#filter_read_selected}}selected{{/filter_read_selected}}>{{str.filter_read}}</option>
-                        <option value="unread" {{#filter_unread_selected}}selected{{/filter_unread_selected}}>{{str.filter_unread}}</option>
-                    </select>
-                </div>
-                
-                <div class="col-md-5 mb-3">
+                <div class="col-md-8 mb-3">
                     <label for="search-input">{{str.search}}</label>
                     <div class="input-group">
                         <input type="text" name="search" id="search-input" class="form-control" value="{{search}}">
@@ -32,51 +22,49 @@
                         </div>
                     </div>
                 </div>
-                {{/is_user_selected}}
             </form>
         </div>
     </div>
 
-    {{#is_user_selected}}
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card border-warning">
+        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
             <span>{{notificationsfor}}</span>
             <div>
-                <button class="btn btn-warning mr-2" id="nm-btn-soft-delete" disabled>
-                    <i class="fa fa-trash"></i> {{str.move_to_trash}}
+                <button class="btn btn-success mr-2" id="nm-btn-restore" disabled>
+                    <i class="fa fa-undo"></i> {{str.restore_selected}}
                 </button>
                 <button class="btn btn-danger" id="nm-btn-hard-delete" disabled>
-                    <i class="fa fa-times-circle"></i> {{str.delete_permanently}}
+                    <i class="fa fa-times-circle"></i> {{str.delete_selected_permanently}}
                 </button>
             </div>
         </div>
         <div class="card-body p-0">
             {{#has_notifications}}
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover mb-0" id="nm-notification-table">
+                    <table class="table table-striped table-hover mb-0" id="nm-trash-table">
                         <thead>
                             <tr>
                                 <th style="width: 40px">
                                     <input type="checkbox" id="nm-check-all" title="{{str.select_all}}">
                                 </th>
+                                <th>User</th>
                                 <th>{{str.col_subject}}</th>
                                 <th>{{str.col_message}}</th>
                                 <th>{{str.col_component}}</th>
-                                <th>{{str.col_timecreated}}</th>
-                                <th>{{str.col_timeread}}</th>
+                                <th>{{str.col_timedeleted}}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {{#notifications}}
-                                <tr class="{{^is_read}}table-warning{{/is_read}}">
+                                <tr>
                                     <td>
                                         <input type="checkbox" class="nm-check-item" value="{{id}}">
                                     </td>
+                                    <td>{{username}}</td>
                                     <td>{{{subject}}}</td>
                                     <td>{{{message}}}</td>
                                     <td>{{component}}</td>
-                                    <td>{{timecreated}}</td>
-                                    <td>{{timeread}}</td>
+                                    <td class="text-danger">{{timedeleted}}</td>
                                 </tr>
                             {{/notifications}}
                         </tbody>
@@ -89,23 +77,16 @@
             
             {{^has_notifications}}
                 <div class="p-3">
-                    <div class="alert alert-info mb-0">{{str.no_notifications}}</div>
+                    <div class="alert alert-info mb-0">{{str.no_trash_notifications}}</div>
                 </div>
             {{/has_notifications}}
         </div>
     </div>
-    {{/is_user_selected}}
-
-    {{^is_user_selected}}
-        <div class="alert alert-info">
-            {{str.pleaseselectuser}}
-        </div>
-    {{/is_user_selected}}
 </div>
 
 {{#js}}
-require(['local_notification_manager/main'], function(Main) {
-    Main.init({
+require(['local_notification_manager/trash'], function(Trash) {
+    Trash.init({
         userid: {{userid}},
         sesskey: '{{sesskey}}'
     });

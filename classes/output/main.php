@@ -111,7 +111,7 @@ class main implements renderable, templatable {
             $data['has_notifications'] = !empty($notifications);
             $data['notifications'] = $notifications;
 
-            $baseurl = new \moodle_url('/local/notification_manager/index.php', [
+            $baseurl = new \moodle_url('/local/notification_manager/manage.php', [
                 'userid' => $this->userid,
                 'userlabel' => $this->userlabel,
                 'search' => $this->search,

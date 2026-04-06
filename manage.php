@@ -21,27 +21,45 @@ require_login();
 $context = context_system::instance();
 require_capability('local/notification_manager:manage', $context);
 
-$timerange = optional_param('timerange', '30', PARAM_ALPHANUM);
+$userid = optional_param('userid', 0, PARAM_INT);
+$userlabel = optional_param('userlabel', '', PARAM_RAW_TRIMMED);
+$page = max(0, optional_param('page', 0, PARAM_INT));
+$search = optional_param('search', '', PARAM_RAW_TRIMMED);
+$filter = optional_param('filter', 'all', PARAM_ALPHA);
 
-$PAGE->set_url(new moodle_url('/local/notification_manager/index.php', ['timerange' => $timerange]));
+if ($userlabel !== '') {
+    if (preg_match('/^\s*(\d+)\s*-/', $userlabel, $matches)) {
+        $userid = (int)$matches[1];
+    }
+}
+
+$params = [
+    'userid' => $userid,
+    'userlabel' => $userlabel,
+    'page' => $page,
+    'search' => $search,
+    'filter' => $filter
+];
+
+$PAGE->set_url(new moodle_url('/local/notification_manager/manage.php', $params));
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
-$PAGE->set_title(get_string('dashboardtitle', 'local_notification_manager'));
+$PAGE->set_title(get_string('tab_manage', 'local_notification_manager'));
 $PAGE->set_heading(get_string('pluginname', 'local_notification_manager'));
 
 $renderer = $PAGE->get_renderer('local_notification_manager');
 
 echo $renderer->header();
-echo $OUTPUT->heading(get_string('dashboardtitle', 'local_notification_manager'));
+echo $OUTPUT->heading(get_string('tab_manage', 'local_notification_manager'));
 
 $tabs = [
     new tabobject('dashboard', new moodle_url('/local/notification_manager/index.php'), get_string('tab_dashboard', 'local_notification_manager')),
     new tabobject('manage', new moodle_url('/local/notification_manager/manage.php'), get_string('tab_manage', 'local_notification_manager')),
     new tabobject('trash', new moodle_url('/local/notification_manager/trash.php'), get_string('tab_trash', 'local_notification_manager'))
 ];
-echo $OUTPUT->tabtree($tabs, 'dashboard');
+echo $OUTPUT->tabtree($tabs, 'manage');
 
-require_once(__DIR__ . '/classes/output/dashboard.php');
-echo $renderer->render(new \local_notification_manager\output\dashboard($timerange));
+require_once(__DIR__ . '/classes/output/main.php');
+echo $renderer->render(new \local_notification_manager\output\main($userid, $userlabel, $page, $search, $filter));
 
 echo $renderer->footer();

@@ -13,10 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2024040606;
-$plugin->release = '0.1.1';
-$plugin->requires = 2024042200;
-$plugin->component = 'local_notification_manager';
+require_once(__DIR__ . '/../../config.php');
+global $DB;
+$columns = $DB->get_columns('notifications');
+foreach ($columns as $c) {
+    echo $c->name . " - Type: " . $c->type . ", MaxLength: " . $c->max_length . "\n";
+}

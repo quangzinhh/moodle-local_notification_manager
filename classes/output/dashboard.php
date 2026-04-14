@@ -76,7 +76,7 @@ class dashboard implements renderable, templatable {
                 'analytic_unread' => get_string('analytic_unread', 'local_notification_manager'),
                 'analytic_top_users' => get_string('analytic_top_users', 'local_notification_manager'),
                 'analytic_popular_types' => get_string('analytic_popular_types', 'local_notification_manager'),
-            ]
+            ],
         ];
 
         $where = '';
@@ -95,15 +95,13 @@ class dashboard implements renderable, templatable {
                           SUM(CAST(CASE WHEN timeread IS NULL THEN 1 ELSE 0 END AS INTEGER)) as unread,
                           SUM(CAST(CASE WHEN timeread IS NOT NULL THEN 1 ELSE 0 END AS INTEGER)) as read
                           FROM {notifications} $sqlwhere";
-        
         // Moodle DML does not support standard SUM CASE well across all DBs smoothly.
         $totalnotifications = $DB->count_records_select('notifications', $where, $params);
-        
+
         $unreadwhere = $where ? "$where AND timeread IS NULL" : "timeread IS NULL";
         $unreadnotifications = $DB->count_records_select('notifications', $unreadwhere, $params);
-        
+
         $readnotifications = $totalnotifications - $unreadnotifications;
-        
         $unreadrate = 0;
         if ($totalnotifications > 0) {
             $unreadrate = round(($unreadnotifications / $totalnotifications) * 100, 1);
@@ -128,7 +126,6 @@ class dashboard implements renderable, templatable {
                     ORDER BY notifcount DESC";
         $topuserrecords = $DB->get_records_sql($usersql, $params, 0, 5);
         $topusers = [];
-        
         if (!empty($topuserrecords)) {
             $userids = array_keys($topuserrecords);
             [$userinsql, $userparams] = $DB->get_in_or_equal($userids);
@@ -166,7 +163,6 @@ class dashboard implements renderable, templatable {
         $typerecords = $DB->get_records_sql($typesql, $params, 0, 10);
         $types = [];
         $maxtypecount = 0;
-        
         foreach ($typerecords as $record) {
             if ($record->notifcount > $maxtypecount) {
                 $maxtypecount = $record->notifcount;

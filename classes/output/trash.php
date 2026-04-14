@@ -86,7 +86,7 @@ class trash implements renderable, templatable {
                 'restore_selected' => get_string('restore_selected', 'local_notification_manager'),
                 'no_trash_notifications' => get_string('no_trash_notifications', 'local_notification_manager'),
                 'select_all' => get_string('select_all', 'local_notification_manager'),
-            ]
+            ],
         ];
 
         $where = [];

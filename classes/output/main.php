@@ -102,7 +102,7 @@ class main implements renderable, templatable {
                 'delete_selected' => get_string('delete_selected', 'local_notification_manager'),
                 'no_notifications' => get_string('no_notifications', 'local_notification_manager'),
                 'select_all' => get_string('select_all', 'local_notification_manager'),
-            ]
+            ],
         ];
 
         if ($this->userid > 0) {
